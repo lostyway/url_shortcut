@@ -1,26 +1,29 @@
 package ru.job4j.url_shortcut.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.url_shortcut.configuration.security.JwtTokenProvider;
 import ru.job4j.url_shortcut.model.User;
 import ru.job4j.url_shortcut.service.UserService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService service;
-    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder encoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
@@ -36,28 +39,19 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
-        User userFromDb = service.findByUsername(user.getUsername());
-        if (userFromDb == null || userFromDb.getPassword() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String jwt = jwtTokenProvider.generateToken(authentication);
+
+            return ResponseEntity.ok(jwt);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password", e);
         }
-        if (!encoder.matches(user.getPassword(), userFromDb.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
-        }
-
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(userFromDb.getUsername(),
-                        null,
-                        List.of(new SimpleGrantedAuthority("ROLE_USER")));
-
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        return ResponseEntity.ok("Login successful");
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpSession session) {
-        session.invalidate();
-        return ResponseEntity.ok("Logout successful");
     }
 
     @GetMapping("/all")

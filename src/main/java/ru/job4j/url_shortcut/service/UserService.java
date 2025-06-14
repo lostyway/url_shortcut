@@ -1,6 +1,7 @@
 package ru.job4j.url_shortcut.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.job4j.url_shortcut.model.User;
 import ru.job4j.url_shortcut.repository.UserRepository;
@@ -19,7 +20,7 @@ public class UserService {
 
     public User findByUsername(String username) {
         return repository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     public List<User> findAll() {

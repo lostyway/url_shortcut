@@ -13,7 +13,8 @@ import java.util.Arrays;
 @Component
 public class LoggerConfiguration {
 
-    @Around("execution(* ru.job4j.url_shortcut..*(..))")
+    @Around("execution(* ru.job4j.url_shortcut..*(..)) "
+            + "&& !within(ru.job4j.url_shortcut.configuration.security..*)")
     public Object logMethodCall(ProceedingJoinPoint joinPoint) throws Throwable {
         String method = joinPoint.getSignature().getName();
         Object[] args = joinPoint.getArgs();
