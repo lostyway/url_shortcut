@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class UrlShortcutApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UrlShortcutApplication.class, args);
-		log.info("Application started: http://localhost:8080/swagger-ui/index.html");
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(UrlShortcutApplication.class, args);
+        log.info("Application started: http://localhost:8080/swagger-ui/index.html");
+    }
 
 }
