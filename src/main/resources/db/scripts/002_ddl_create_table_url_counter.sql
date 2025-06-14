@@ -1,6 +1,7 @@
-create table url_counter
+create table urls
 (
     id bigserial primary key,
-    url   text unique not null,
+    original_url   text unique not null,
+    short_url   text unique,
     request_count bigint
 );

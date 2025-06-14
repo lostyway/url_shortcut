@@ -1,4 +1,4 @@
-package ru.job4j.url_shortcut.configuration;
+package ru.job4j.url_shortcut.configuration.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,12 +15,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html").permitAll()
+                                "/swagger-ui.html",
+                                "/user/register",
+                                "/user/login",
+                                "/user/all")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin()
-                .and()
-                .csrf().disable();
+                .csrf(csrf -> csrf.disable());
         return http.build();
     }
 }
