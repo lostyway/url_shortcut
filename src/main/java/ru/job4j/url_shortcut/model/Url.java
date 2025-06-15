@@ -2,10 +2,7 @@ package ru.job4j.url_shortcut.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "urls")
@@ -13,20 +10,20 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = "id")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Urls {
+@Builder
+public class Url {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotNull
-    @Column(name = "original_url", unique = true, nullable = false)
-    private String originalUrl;
+    @Column(name = "url", unique = true, nullable = false)
+    private String url;
 
-    @Column(name = "short_url", unique = true)
-    private String shortUrl;
+    @Column(name = "code", unique = true, nullable = false)
+    private String code;
 
-    @NotNull
     @Column(name = "request_count")
     private long requestCount;
 

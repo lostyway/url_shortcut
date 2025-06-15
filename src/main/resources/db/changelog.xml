@@ -7,4 +7,5 @@
 
     <include file="db/scripts/001_ddl_create_table_users.sql"/>
     <include file="db/scripts/002_ddl_create_table_url_counter.sql"/>
+    <include file="db/scripts/003_create_increment_url_request_count_procedure.sql"/>
 </databaseChangeLog>

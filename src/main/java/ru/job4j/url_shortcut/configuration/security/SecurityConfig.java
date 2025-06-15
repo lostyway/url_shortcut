@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,17 +22,7 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    /**
-     * Создает бин для кодирования паролей.
-     * Используется BCryptPasswordEncoder, который является рекомендуемым алгоритмом.
-     *
-     * @return Экземпляр BCryptPasswordEncoder.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Создает бин для AuthenticationManager.
@@ -54,10 +43,10 @@ public class SecurityConfig {
      * @return Экземпляр DaoAuthenticationProvider.
      */
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
@@ -77,14 +66,15 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/user/register",
-                                "/user/login") // Разрешаем доступ без аутентификации к этим URL
+                                "/registration",
+                                "/login",
+                                "/redirect/{code}") // Разрешаем доступ без аутентификации к этим URL
                         .permitAll()
                         .anyRequest().authenticated() // Все остальные запросы требуют аутентификации
                 );
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        http.authenticationProvider(authenticationProvider()); // Добавляем наш провайдер аутентификации
+        http.authenticationProvider(authenticationProvider(passwordEncoder)); // Добавляем наш провайдер аутентификации
 
         return http.build();
     }

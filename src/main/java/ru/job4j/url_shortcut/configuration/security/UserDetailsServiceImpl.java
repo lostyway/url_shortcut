@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.job4j.url_shortcut.model.User;
-import ru.job4j.url_shortcut.service.UserService;
+import ru.job4j.url_shortcut.service.SiteService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserService userService;
+    private final SiteService userService;
 
     /**
      * Загружает данные пользователя по его имени.
