@@ -16,12 +16,6 @@ public class UrlShortcutApplication {
         log.info("Application started: http://localhost:8080/swagger-ui/index.html");
     }
 
-    /**
-     * Создает бин для кодирования паролей.
-     * Используется BCryptPasswordEncoder, который является рекомендуемым алгоритмом.
-     *
-     * @return Экземпляр BCryptPasswordEncoder.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

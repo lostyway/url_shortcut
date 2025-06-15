@@ -1,7 +1,6 @@
 package ru.job4j.url_shortcut.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +17,8 @@ import ru.job4j.url_shortcut.dto.SiteRegistrationResponseDto;
 import ru.job4j.url_shortcut.service.SiteService;
 
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 
 @RequiredArgsConstructor
@@ -50,7 +51,7 @@ public class LoginAndRegistrationController {
 
             return ResponseEntity.ok(jwt);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password", e);
+            throw new ResponseStatusException(UNAUTHORIZED, "Неверный логин или пароль");
         }
     }
 }

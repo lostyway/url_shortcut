@@ -19,15 +19,11 @@ public class LoggerConfiguration {
         String method = joinPoint.getSignature().getName();
         Object[] args = joinPoint.getArgs();
         String params = args.length > 0 ? Arrays.toString(args) : "без параметров";
+
         log.debug("Вызван метод: {} с параметрами: {}", method, params);
 
-        try {
-            Object result = joinPoint.proceed();
-            log.debug("Метод {} завершился успешно. Результат: {}", method, result);
-            return result;
-        } catch (Throwable e) {
-            log.error("Метод {} выбросил исключение: {}", method, e.getMessage());
-            throw e;
-        }
+        Object result = joinPoint.proceed();
+        log.debug("Метод {} завершился успешно. Результат: {}", method, result);
+        return result;
     }
 }

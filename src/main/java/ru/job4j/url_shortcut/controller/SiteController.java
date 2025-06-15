@@ -35,20 +35,12 @@ public class SiteController {
 
     @GetMapping("/redirect/{code}")
     public ResponseEntity<Void> getRedirectUrl(@PathVariable String code) {
-        try {
-            Url url = urlService.findAndIncrementByCode(code);
+        Url url = urlService.findAndIncrementByCode(code);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create(url.getUrl()));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(url.getUrl()));
 
-            return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
-        } catch (IllegalArgumentException e) {
-            log.warn("Could not find url for code {}", code);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            log.error("Error processing redirect and increment for code {}: {}", code, e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
     }
 
     @GetMapping("/statistic")

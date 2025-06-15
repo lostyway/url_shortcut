@@ -2,8 +2,11 @@ package ru.job4j.url_shortcut.service;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.TransactionException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.url_shortcut.dto.UrlStatistics;
 import ru.job4j.url_shortcut.model.Url;
 import ru.job4j.url_shortcut.repository.UrlRepository;
@@ -25,14 +28,16 @@ public class UrlService {
     @Transactional
     public Url findAndIncrementByCode(String code) {
         Url url = urlsRepository.findByCode(code)
-                .orElseThrow(() -> new IllegalArgumentException("No url found with code " + code));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Не было найдено адреса с этим кодом " + code));
 
         try {
             entityManager.createNativeQuery("call increment_url_request_count_by_code(:code)")
                     .setParameter("code", code)
                     .executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to call increment_url_request_count_by_code: " + code, e);
+            throw new TransactionException("Failed to call increment_url_request_count_by_code: " + code, e);
         }
 
         return url;
