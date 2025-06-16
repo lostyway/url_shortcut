@@ -27,15 +27,20 @@ public class UrlService {
 
     @Transactional
     public Url findAndIncrementByCode(String code) {
+        if (code.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Код не может быть пустым!");
+        }
+
         Url url = urlsRepository.findByCode(code)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Не было найдено адреса с этим кодом " + code));
+                        "Не было найдено адреса с этим кодом: " + code));
 
         try {
             entityManager.createNativeQuery("call increment_url_request_count_by_code(:code)")
                     .setParameter("code", code)
                     .executeUpdate();
+            entityManager.clear();
         } catch (Exception e) {
             throw new TransactionException("Failed to call increment_url_request_count_by_code: " + code, e);
         }

@@ -1,5 +1,6 @@
 package ru.job4j.url_shortcut.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,7 +30,7 @@ public class LoginAndRegistrationController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/registration")
-    public ResponseEntity<?> register(@RequestBody SiteRegistrationDto dto) {
+    public ResponseEntity<?> register(@Valid @RequestBody SiteRegistrationDto dto) {
         String siteName = dto.getSite();
         SiteRegistrationResponseDto result = siteService.register(siteName);
         return ResponseEntity.ok(Map.of(
@@ -39,7 +40,7 @@ public class LoginAndRegistrationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginDto) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDto loginDto) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getLogin(), loginDto.getPassword())

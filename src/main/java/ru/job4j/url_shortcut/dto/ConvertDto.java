@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class ConvertDto {
-    @NotBlank(message = "URL cannot be empty")
+    @NotBlank(message = "Ссылка не может быть пуста!")
     private String url;
 }
