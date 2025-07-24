@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:15
+    container_name: url_shortcut_db
+    environment:
+      POSTGRES_DB: url_shortcut
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: url_shortcut_app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/url_shortcut
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_LIQUIBASE_ENABLED: "true"
+      SPRING_LIQUIBASE_CHANGE_LOG: db/changelog.xml
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: 123
+      LOGGING_LEVEL_RU_JOB4J_URL_SHORTCUT: debug
+      APP_JWTSECRET: VerySecretKeyForUrlShortcut12345
+      APP_JWTEXPIRATIONMS: 86400000
+    restart: unless-stopped
+volumes:
+  pgdata:
